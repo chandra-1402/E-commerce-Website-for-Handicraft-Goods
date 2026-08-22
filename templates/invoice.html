@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #ORD-{{ 10000 + order.id }}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Lato:wght@300;400;700&display=swap');
+        
+        body { font-family: 'Lato', sans-serif; color: #444; line-height: 1.6; margin: 0; padding: 0; background: #f4f6f8; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .invoice-box { max-width: 850px; margin: 50px auto; padding: 50px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); background: white; position: relative; overflow: hidden; }
+        
+        /* Decorative top bar */
+        .invoice-box::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 8px; background: #7d1c23; }
+        
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 50px; border-bottom: 2px solid #f0f0f0; padding-bottom: 30px; }
+        .logo img { max-height: 90px; }
+        
+        .invoice-meta { text-align: right; }
+        .invoice-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: #7d1c23; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px; }
+        .meta-text { font-size: 0.95rem; color: #666; margin: 3px 0; }
+        .meta-text strong { color: #333; display: inline-block; width: 80px; }
+        
+        .addresses { display: flex; justify-content: space-between; margin-bottom: 50px; }
+        .address-col { width: 45%; }
+        .address-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: #999; margin-bottom: 10px; font-weight: 700; }
+        .address-details { font-size: 1rem; color: #333; line-height: 1.7; }
+        
+        .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+        .invoice-table th { background: #fdfaf4; padding: 15px; text-align: left; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: #7d1c23; border-bottom: 2px solid #e0e0e0; }
+        .invoice-table th:nth-child(2), .invoice-table th:nth-child(3), .invoice-table th:nth-child(4) { text-align: center; }
+        .invoice-table th:last-child { text-align: right; }
+        
+        .invoice-table td { padding: 18px 15px; border-bottom: 1px solid #f0f0f0; font-size: 1rem; color: #444; }
+        .invoice-table td:nth-child(2), .invoice-table td:nth-child(3) { text-align: center; }
+        .invoice-table td:last-child { text-align: right; font-weight: 500; }
+        
+        .totals-section { display: flex; justify-content: flex-end; margin-bottom: 50px; }
+        .totals-table { width: 350px; border-collapse: collapse; }
+        .totals-table td { padding: 12px 15px; font-size: 1.05rem; }
+        .totals-table td:first-child { text-align: right; color: #666; }
+        .totals-table td:last-child { text-align: right; font-weight: 700; color: #333; }
+        
+        .totals-table tr.grand-total td { border-top: 2px solid #7d1c23; background: #fdfaf4; font-size: 1.3rem; color: #7d1c23; padding-top: 20px; padding-bottom: 20px; }
+        
+        .footer { text-align: center; border-top: 1px solid #eee; padding-top: 30px; color: #888; font-size: 0.9rem; }
+        
+        .print-btn { display: block; width: 220px; margin: 30px auto; padding: 15px; background: #7d1c23; color: white; text-align: center; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 1.1rem; cursor: pointer; border: none; box-shadow: 0 4px 15px rgba(125, 28, 35, 0.3); transition: all 0.3s; }
+        .print-btn:hover { background: #62141a; transform: translateY(-2px); }
+        
+        @media print { 
+            .print-btn { display: none; } 
+            body { background: white; margin: 0; padding: 0; } 
+            .invoice-box { box-shadow: none; margin: 0; border: none; padding: 0; max-width: 100%; } 
+            .invoice-table th { background: #fdfaf4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .totals-table tr.grand-total td { background: #fdfaf4 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+    <button onclick="window.print()" class="print-btn"><i class="ph ph-printer"></i> Print / Save as PDF</button>
+
+    <div class="invoice-box">
+        
+        <!-- Header Section -->
+        <div class="header">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/new_logo.png') }}" alt="Tribal Handicraft Logo">
+            </div>
+            <div class="invoice-meta">
+                <h1 class="invoice-title">Invoice</h1>
+                <div class="meta-text"><strong>Order No:</strong> #ORD-{{ 10000 + order.id }}</div>
+                <div class="meta-text"><strong>Date:</strong> {{ order.created_at.strftime('%B %d, %Y') }}</div>
+                <div class="meta-text"><strong>Status:</strong> <span style="color: #2e7d32; font-weight: 700;">{{ order.status }}</span></div>
+                <div class="meta-text" style="margin-top: 10px;"><strong>Exp. Delivery:</strong> {{ expected_delivery.strftime('%B %d, %Y') }}</div>
+            </div>
+        </div>
+
+        <!-- Addresses Section -->
+        <div class="addresses">
+            <div class="address-col">
+                <div class="address-title">Billed To</div>
+                <div class="address-details">
+                    <strong>{{ buyer.first_name }} {{ buyer.last_name }}</strong><br>
+                    {% if order.shipping_address %}
+                        {{ order.shipping_address|replace('\n', '<br>')|safe }}<br>
+                    {% endif %}
+                    {% if buyer.phone %}Phone: {{ buyer.phone }}{% endif %}
+                </div>
+            </div>
+            <div class="address-col" style="text-align: right;">
+                <div class="address-title">Sold By</div>
+                <div class="address-details">
+                    {% set seller = order.items[0].product.seller %}
+                    <strong>{{ seller.name }}</strong><br>
+                    {% if seller.email %}{{ seller.email }}<br>{% endif %}
+                    {% if seller.phone %}Phone: {{ seller.phone }}<br>{% endif %}
+                    {% if seller.city or seller.state %}
+                        {{ seller.city }}{% if seller.city and seller.state %}, {% endif %}{{ seller.state }}
+                    {% else %}
+                        Tribal Handicraft Platform
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>Item Description</th>
+                    <th>Payment Method</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items %}
+                <tr>
+                    <td><strong>{{ item.product.name }}</strong></td>
+                    <td>{{ order.payment_method }}</td>
+                    <td>₹{{ "%.2f"|format(item.price_at_purchase) }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ "%.2f"|format(item.price_at_purchase * item.quantity) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Totals Section -->
+        <div class="totals-section">
+            <table class="totals-table">
+                <tr>
+                    <td>Subtotal</td>
+                    <td>₹{{ "%.2f"|format(order.total_amount) }}</td>
+                </tr>
+                <tr>
+                    <td>Shipping</td>
+                    <td>Free</td>
+                </tr>
+                <tr class="grand-total">
+                    <td>Grand Total</td>
+                    <td>₹{{ "%.2f"|format(order.total_amount) }}</td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Footer Section -->
+        <div class="footer">
+            <p>Thank you for supporting authentic Indian artisans. This is a computer-generated invoice and does not require a signature.</p>
+        </div>
+        
+    </div>
+</body>
+</html>

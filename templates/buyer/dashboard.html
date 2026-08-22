@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}My Account | Tribal Handicraft{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 4rem 0;">
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background-color: var(--color-cream); color: var(--color-primary); padding: 1rem; border-left: 4px solid var(--color-primary); margin-bottom: 2rem;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div style="display: flex; gap: 3rem; align-items: flex-start; flex-wrap: wrap;">
+        
+        <!-- Sidebar / Profile Card -->
+        <div style="flex: 1; min-width: 300px; max-width: 350px; background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--color-cream); color: var(--color-primary); font-size: 3rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
+                    <i class="ph ph-user"></i>
+                </div>
+                <h2 style="font-family: var(--font-display); color: var(--color-primary); margin: 0;">{{ buyer.first_name }} {{ buyer.last_name }}</h2>
+                <p style="color: var(--color-text-muted); margin-top: 0.5rem;">Buyer Account</p>
+            </div>
+            
+            <div style="border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                <h4 style="color: var(--color-text); margin-top: 0; margin-bottom: 1rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Contact Information</h4>
+                <p style="margin: 0 0 0.5rem 0; color: var(--color-text-muted);"><i class="ph ph-envelope-simple" style="margin-right: 8px;"></i> {{ buyer.email }}</p>
+                {% if buyer.phone %}
+                <p style="margin: 0 0 0.5rem 0; color: var(--color-text-muted);"><i class="ph ph-phone" style="margin-right: 8px;"></i> {{ buyer.phone }}</p>
+                {% endif %}
+            </div>
+
+            <div style="border-top: 1px solid var(--border-color); padding-top: 1.5rem; margin-top: 1.5rem;">
+                <h4 style="color: var(--color-text); margin-top: 0; margin-bottom: 1rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Saved Address</h4>
+                <p style="margin: 0; color: var(--color-text-muted); line-height: 1.6;">
+                    <i class="ph ph-map-pin" style="margin-right: 8px;"></i>
+                    {% if buyer.address_line_1 %}
+                        {{ buyer.address_line_1 }}<br>
+                        {% if buyer.address_line_2 %}<span style="margin-left: 24px;">{{ buyer.address_line_2 }}</span><br>{% endif %}
+                        <span style="margin-left: 24px;">{{ buyer.city }}{% if buyer.city and buyer.state %}, {% endif %}{{ buyer.state }}</span><br>
+                        <span style="margin-left: 24px;">{{ buyer.pincode }}</span>
+                    {% else %}
+                        No address saved yet.
+                    {% endif %}
+                </p>
+            </div>
+            
+            <a href="{{ url_for('auth.logout') }}" style="display: block; width: 100%; text-align: center; padding: 1rem; border: 1px solid var(--color-primary); color: var(--color-primary); border-radius: 4px; text-decoration: none; margin-top: 2rem; font-weight: bold; transition: background 0.2s;">
+                <i class="ph ph-sign-out"></i> Log Out
+            </a>
+        </div>
+
+        <!-- Order History -->
+        <div style="flex: 3; min-width: 500px;">
+            <h2 style="font-family: var(--font-display); color: var(--color-primary); font-size: 2.5rem; margin-top: 0; margin-bottom: 1.5rem;">My Orders</h2>
+            
+            {% if orders %}
+                <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="background: #fcf8f2; border-bottom: 2px solid var(--border-color);">
+                                <th style="padding: 1.2rem; color: var(--color-primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Order ID</th>
+                                <th style="padding: 1.2rem; color: var(--color-primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Date</th>
+                                <th style="padding: 1.2rem; color: var(--color-primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Total</th>
+                                <th style="padding: 1.2rem; color: var(--color-primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Status</th>
+                                <th style="padding: 1.2rem; text-align: center; color: var(--color-primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.2s;">
+                                <td style="padding: 1.2rem; font-weight: bold; color: var(--color-text);">#ORD-{{ 10000 + order.id }}</td>
+                                <td style="padding: 1.2rem; color: var(--color-text-muted);">{{ order.created_at.strftime('%B %d, %Y') }}</td>
+                                <td style="padding: 1.2rem; font-weight: bold; color: var(--color-text);">₹{{ "%.2f"|format(order.total_amount) }}</td>
+                                <td style="padding: 1.2rem;">
+                                    {% if order.status == 'Confirmed' %}
+                                        <span style="background: #e8f5e9; color: #2e7d32; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold;"><i class="ph-fill ph-check-circle"></i> Confirmed</span>
+                                    {% elif order.status == 'Pending' %}
+                                        <span style="background: #fff3e0; color: #e65100; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold;"><i class="ph-fill ph-clock"></i> Pending</span>
+                                    {% else %}
+                                        <span style="background: #f3f4f6; color: #4b5563; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">{{ order.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="padding: 1.2rem; text-align: center;">
+                                    <a href="{{ url_for('buyer.track_order', order_id=order.id) }}" style="color: var(--color-warning); text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 0.3rem; margin-right: 1rem;">
+                                        <i class="ph ph-map-pin"></i> Track
+                                    </a>
+                                    <a href="{{ url_for('cart.invoice', order_id=order.id) }}" target="_blank" style="color: var(--color-primary); text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                        <i class="ph ph-receipt"></i> Invoice
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 4rem 2rem; text-align: center;">
+                    <div style="font-size: 4rem; color: var(--color-text-muted); margin-bottom: 1rem;"><i class="ph ph-shopping-bag"></i></div>
+                    <h3 style="margin-top: 0; color: var(--color-text);">No orders yet</h3>
+                    <p style="color: var(--color-text-muted); max-width: 400px; margin: 0 auto 2rem auto;">Looks like you haven't made any purchases yet. Discover beautiful, authentic Indian handicrafts from our sellers.</p>
+                    <a href="{{ url_for('storefront.index') }}" class="btn-solid-primary" style="display: inline-block; padding: 1rem 2rem; text-decoration: none;">Start Shopping</a>
+                </div>
+            {% endif %}
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

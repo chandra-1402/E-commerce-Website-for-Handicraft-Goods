@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" style="
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ url_for('static', filename='images/Banner 1.jpg') }}');
+    background-size: cover; 
+    background-position: center; 
+    color: white; 
+    padding: 6rem 0; 
+    text-align: center;
+">
+    <div class="container">
+        <h2 style="font-family: var(--font-display); font-size: 3.5rem; margin-bottom: 1rem;">
+            Authentic Tribal Handicrafts
+        </h2>
+        <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem auto; line-height: 1.6;">
+            Discover the rich cultural heritage through our handpicked collection of traditional crafts.
+        </p>
+        <a href="{{ url_for('storefront.all_products') }}" class="btn-solid-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">Explore Collection</a>
+    </div>
+</section>
+
+<!-- Shop by Category -->
+<section class="container" style="padding-top: 2rem;">
+    <div class="section-title">
+        <span>Shop by Category</span>
+    </div>
+    
+    <div class="category-grid">
+        <div class="category-card">
+            <!-- Using product 1 -->
+            <img src="{{ url_for('static', filename='images/product 1.jpg') }}" alt="Sarees">
+            <h3>Sarees</h3>
+        </div>
+        <div class="category-card">
+            <!-- Using product 2 -->
+            <img src="{{ url_for('static', filename='images/product 2.jpg') }}" alt="Men Ethnic Wear">
+            <h3>Men Ethnic Wear</h3>
+        </div>
+        <div class="category-card">
+            <!-- Using product 3 -->
+            <img src="{{ url_for('static', filename='images/product 3.jpg') }}" alt="Women Kurtis">
+            <h3>Women Kurtis</h3>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Arrivals / Products -->
+<section class="container" style="padding: 4rem 0 2rem 0;">
+    <div class="section-title">
+        <span>Latest Arrivals</span>
+    </div>
+    
+    {% if products %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+        {% for p in products %}
+        <div style="background: white; border: 1px solid var(--border-color); padding: 1rem; text-align: center; transition: transform 0.3s;">
+            <a href="{{ url_for('storefront.product_detail', product_id=p.id) }}" style="text-decoration: none;">
+                {% if p.image_1 %}
+                    <img src="{{ url_for('static', filename='images/' + p.image_1) }}" style="width: 100%; height: 250px; object-fit: cover; margin-bottom: 1rem;">
+                {% else %}
+                    <div style="width: 100%; height: 250px; background: #eee; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; color: #999;"><i class="ph ph-image" style="font-size: 3rem;"></i></div>
+                {% endif %}
+                
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--color-text);">{{ p.name }}</h3>
+                {% if p.discount > 0 %}
+                    <p style="margin: 0 0 1rem 0;">
+                        <span style="color: var(--color-text-muted); text-decoration: line-through; margin-right: 0.5rem; font-size: 0.9rem;">₹{{ "%.2f"|format(p.price) }}</span>
+                        <span style="color: var(--color-primary); font-weight: bold; font-size: 1.2rem;">₹{{ "%.2f"|format(p.price * (1 - p.discount/100)) }}</span>
+                        <span style="display: block; margin-top: 0.2rem; color: var(--color-warning); font-size: 0.85rem; font-weight: bold;">{{ p.discount }}% OFF</span>
+                    </p>
+                {% else %}
+                    <p style="margin: 0 0 1rem 0; color: var(--color-primary); font-weight: bold; font-size: 1.2rem;">₹{{ "%.2f"|format(p.price) }}</p>
+                {% endif %}
+            </a>
+            <form action="{{ url_for('cart.add_to_cart', product_id=p.id) }}" method="POST">
+                <button type="submit" class="btn-solid-primary" style="width: 100%;">Add to Cart</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 2rem 0;">
+        <p style="color: var(--color-text-muted);">No products have been added yet.</p>
+    </div>
+    {% endif %}
+</section>
+
+<!-- Info Banner -->
+<section class="info-banner">
+    <div class="info-text">
+        <h2>The Gateway to<br>India's Timeless Heritage</h2>
+        <p>We aim to provide a platform to Indian Handloom Weavers and Handicraft Artisans to sell their traditional handicraft products online, paving the way for their financial and social empowerment. This will also help in promoting their skills while eliminating the intermediaries.</p>
+        <p>We hope to raise the dignity of the Indian artisans and kindle an interest for an unsurpassed legacy of craft that spans millennia and spreads across the length and breadth of India.</p>
+        <button class="btn-solid-primary" style="margin-top: 1rem;">Know More</button>
+    </div>
+    <!-- Using Banner 2 from local images -->
+    <div class="info-img" style="background-image: url('{{ url_for('static', filename='images/Banner 2.jpg') }}');"></div>
+</section>
+
+<!-- Badges (Free Shipping, Easy Returns, etc) -->
+<section class="container" style="padding: 4rem 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; text-align: center;">
+        <div style="flex: 1; border-right: 1px solid var(--border-color);">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; background: var(--color-cream); border-radius: 50%; color: var(--color-primary); font-size: 2.5rem; margin-bottom: 1rem;">
+                <i class="ph ph-truck"></i>
+            </div>
+            <h3 style="color: var(--color-primary); font-size: 1.4rem;">Free Shipping</h3>
+        </div>
+        <div style="flex: 1; border-right: 1px solid var(--border-color);">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; background: var(--color-cream); border-radius: 50%; color: var(--color-primary); font-size: 2.5rem; margin-bottom: 1rem;">
+                <i class="ph ph-package"></i>
+            </div>
+            <h3 style="color: var(--color-primary); font-size: 1.4rem;">Easy Returns</h3>
+        </div>
+        <div style="flex: 1;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; background: var(--color-cream); border-radius: 50%; color: var(--color-primary); font-size: 2.5rem; margin-bottom: 1rem;">
+                <i class="ph ph-shield-check"></i>
+            </div>
+            <h3 style="color: var(--color-primary); font-size: 1.4rem;">Safe & Secure Payment</h3>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

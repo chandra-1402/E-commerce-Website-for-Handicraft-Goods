@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}All Products | Tribal Handicraft{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 4rem 0;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem;">
+        <div>
+            <h1 style="font-family: var(--font-display); color: var(--color-primary); font-size: 2.5rem; margin: 0;">All Authentic Handicrafts</h1>
+            <p style="color: var(--color-text-muted); margin-top: 0.5rem; font-size: 1.1rem;">Browse our entire collection from artisans across India.</p>
+        </div>
+        <div style="color: var(--color-text-muted); font-weight: bold;">
+            Showing {{ products|length }} products
+        </div>
+    </div>
+
+    {% if products %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+        {% for product in products %}
+        <div style="background: white; border: 1px solid var(--border-color); padding: 1rem; text-align: center; transition: transform 0.3s;">
+            <a href="{{ url_for('storefront.product_detail', product_id=product.id) }}" style="text-decoration: none;">
+                {% if product.image_1 %}
+                    <img src="{{ url_for('static', filename='images/' + product.image_1) }}" style="width: 100%; height: 250px; object-fit: cover; margin-bottom: 1rem;">
+                {% else %}
+                    <div style="width: 100%; height: 250px; background: #eee; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; color: #999;"><i class="ph ph-image" style="font-size: 3rem;"></i></div>
+                {% endif %}
+                
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--color-text);">{{ product.name }}</h3>
+                <p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: var(--color-text-muted);">By {{ product.seller.name }}</p>
+                {% if product.discount > 0 %}
+                    <p style="margin: 0 0 1rem 0;">
+                        <span style="color: var(--color-text-muted); text-decoration: line-through; margin-right: 0.5rem; font-size: 0.9rem;">₹{{ "%.2f"|format(product.price) }}</span>
+                        <span style="color: var(--color-primary); font-weight: bold; font-size: 1.2rem;">₹{{ "%.2f"|format(product.price * (1 - product.discount/100)) }}</span>
+                        <span style="display: block; margin-top: 0.2rem; color: var(--color-warning); font-size: 0.85rem; font-weight: bold;">{{ product.discount }}% OFF</span>
+                    </p>
+                {% else %}
+                    <p style="margin: 0 0 1rem 0; color: var(--color-primary); font-weight: bold; font-size: 1.2rem;">₹{{ "%.2f"|format(product.price) }}</p>
+                {% endif %}
+            </a>
+            <div style="display: flex; gap: 0.5rem;">
+                <form action="{{ url_for('cart.add_to_cart', product_id=product.id) }}" method="POST" style="flex: 1;">
+                    <button type="submit" class="btn-solid-primary" style="width: 100%; padding: 0.6rem; font-size: 0.9rem;">Add to Cart</button>
+                </form>
+                <form action="{{ url_for('cart.add_to_cart', product_id=product.id) }}" method="POST" style="flex: 1;">
+                    <input type="hidden" name="buy_now" value="true">
+                    <button type="submit" class="btn-outline-primary" style="width: 100%; padding: 0.6rem; font-size: 0.9rem;">Buy Now</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 4rem 2rem; background: #fcf8f2; border-radius: 8px; border: 1px dashed var(--color-primary);">
+        <i class="ph ph-storefront" style="font-size: 4rem; color: var(--color-primary); opacity: 0.5; margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--color-primary);">No products available yet.</h3>
+        <p style="color: var(--color-text-muted);">Please check back later when our artisans have listed their items.</p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

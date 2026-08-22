@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tribal Handicraft{% endblock %}</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/logo.jpg') }}">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container" style="display: flex; justify-content: space-between; width: 100%;">
+            <div>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/1200px-Emblem_of_India.svg.png" style="height: 15px; margin-right: 5px; filter: brightness(0) invert(1);" alt="Emblem">
+                Government of India | Ministry of Textiles
+            </div>
+            <div>
+                English <i class="ph ph-caret-down"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <header class="main-header">
+        <div class="container header-container">
+            <a href="/" class="logo-area">
+                <!-- If logo is horizontal, else fallback to text -->
+                <img src="{{ url_for('static', filename='images/new_logo.png') }}" alt="Tribal Handicraft Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <h1 style="display:none; color: var(--color-primary); font-family: var(--font-display);">Tribal Handicraft</h1>
+            </a>
+            
+            <div class="search-box">
+                <input type="text" placeholder="Search...">
+                <button><i class="ph ph-magnifying-glass"></i></button>
+            </div>
+            
+            <div class="header-actions">
+                {% if session.get('user_id') %}
+                    {% if session.get('role') == 'SELLER' %}
+                        <a href="{{ url_for('seller.dashboard') }}"><i class="ph ph-storefront"></i> Dashboard</a>
+                    {% else %}
+                        <a href="{{ url_for('buyer.dashboard') }}"><i class="ph ph-user"></i> Account</a>
+                        <a href="{{ url_for('cart.view_cart') }}" style="position: relative;">
+                            <i class="ph ph-shopping-cart"></i> Cart
+                            {% if session.get('cart') and session.get('cart').values()|sum > 0 %}
+                                <span style="position: absolute; top: -8px; right: -12px; background: var(--color-warning); color: white; border-radius: 50%; padding: 0.1rem 0.4rem; font-size: 0.75rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">{{ session.get('cart').values()|sum }}</span>
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                    <a href="{{ url_for('auth.logout') }}"><i class="ph ph-sign-out"></i> Logout</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}"><i class="ph ph-sign-in"></i> Sign In</a>
+                    <a href="{{ url_for('cart.view_cart') }}" style="position: relative;">
+                        <i class="ph ph-shopping-cart"></i> Cart
+                        {% if session.get('cart') and session.get('cart').values()|sum > 0 %}
+                            <span style="position: absolute; top: -8px; right: -12px; background: var(--color-warning); color: white; border-radius: 50%; padding: 0.1rem 0.4rem; font-size: 0.75rem; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">{{ session.get('cart').values()|sum }}</span>
+                        {% endif %}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    {% if session.get('role') != 'SELLER' %}
+    <nav class="nav-bar">
+        <div class="container">
+            <ul class="nav-list">
+                <li><a href="{{ url_for('storefront.index') }}">HOME</a></li>
+                <li><a href="{{ url_for('storefront.all_products') }}">ALL PRODUCTS</a></li>
+                {% if session.get('role') == 'BUYER' %}
+                    <li><a href="{{ url_for('buyer.dashboard') }}">MY ACCOUNT</a></li>
+                    <li><a href="{{ url_for('buyer.orders') }}">MY ORDERS</a></li>
+                {% elif not session.get('user_id') %}
+                    <li><a href="{{ url_for('auth.login') }}">LOGIN / REGISTER</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('cart.view_cart') }}">CART</a></li>
+                <li><a href="{{ url_for('auth.register_seller') }}" style="color: var(--color-warning);">BECOME A SELLER</a></li>
+            </ul>
+        </div>
+    </nav>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Privacy and Cookie Policy</a></li>
+                        <li><a href="#">Search Terms</a></li>
+                        <li><a href="#">Advanced Search</a></li>
+                        <li><a href="#">Orders and Returns</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Policies & Info</h4>
+                    <ul>
+                        <li><a href="#">About Tribal Handicraft</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Grievance Redressal</a></li>
+                        <li><a href="#">Disclaimer</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Social Media</h4>
+                    <ul>
+                        <li><a href="#"><i class="ph ph-facebook-logo"></i> facebook</a></li>
+                        <li><a href="#"><i class="ph ph-twitter-logo"></i> twitter</a></li>
+                        <li><a href="#"><i class="ph ph-instagram-logo"></i> Instagram</a></li>
+                        <li><a href="#"><i class="ph ph-youtube-logo"></i> Youtube</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>We accept</h4>
+                    <p>Tollfree Number: 18001216216</p>
+                    <p>Email: care@tribalhandicraft.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Idea Tribe Website. All rights reserved.</p>
+            </div>
+    </footer>
+
+</body>
+</html>

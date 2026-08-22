@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders | Tribal Handicraft{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 4rem 0;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem;">
+        <div>
+            <h1 style="font-family: var(--font-display); color: var(--color-primary); font-size: 2.5rem; margin: 0;">My Orders</h1>
+            <p style="color: var(--color-text-muted); margin-top: 0.5rem; font-size: 1.1rem;">View and track all your past purchases.</p>
+        </div>
+        <div style="color: var(--color-text-muted); font-weight: bold;">
+            <a href="{{ url_for('buyer.dashboard') }}" style="color: var(--color-primary); text-decoration: none;"><i class="ph ph-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </div>
+
+    {% if orders %}
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="background: #fcf8f2; border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 1.2rem; color: var(--color-primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Order ID</th>
+                        <th style="padding: 1.2rem; color: var(--color-primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Date</th>
+                        <th style="padding: 1.2rem; color: var(--color-primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Total</th>
+                        <th style="padding: 1.2rem; color: var(--color-primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Status</th>
+                        <th style="padding: 1.2rem; text-align: center; color: var(--color-primary); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.2s;">
+                        <td style="padding: 1.2rem; font-weight: bold; color: var(--color-text);">#ORD-{{ 10000 + order.id }}</td>
+                        <td style="padding: 1.2rem; color: var(--color-text-muted);">{{ order.created_at.strftime('%B %d, %Y') }}</td>
+                        <td style="padding: 1.2rem; font-weight: bold; color: var(--color-text);">₹{{ "%.2f"|format(order.total_amount) }}</td>
+                        <td style="padding: 1.2rem;">
+                            {% if order.status == 'Confirmed' %}
+                                <span style="background: #e8f5e9; color: #2e7d32; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold;"><i class="ph-fill ph-check-circle"></i> Confirmed</span>
+                            {% elif order.status == 'Pending' %}
+                                <span style="background: #fff3e0; color: #e65100; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold;"><i class="ph-fill ph-clock"></i> Pending</span>
+                            {% else %}
+                                <span style="background: #f3f4f6; color: #4b5563; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">{{ order.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1.2rem; text-align: center;">
+                            <a href="{{ url_for('buyer.track_order', order_id=order.id) }}" style="color: var(--color-warning); text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 0.3rem; margin-right: 1rem;">
+                                <i class="ph ph-map-pin"></i> Track
+                            </a>
+                            <a href="{{ url_for('cart.invoice', order_id=order.id) }}" target="_blank" style="color: var(--color-primary); text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 0.3rem;">
+                                <i class="ph ph-receipt"></i> Invoice
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div style="background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 4rem 2rem; text-align: center;">
+            <div style="font-size: 4rem; color: var(--color-text-muted); margin-bottom: 1rem;"><i class="ph ph-shopping-bag"></i></div>
+            <h3 style="margin-top: 0; color: var(--color-text);">No orders yet</h3>
+            <p style="color: var(--color-text-muted); max-width: 400px; margin: 0 auto 2rem auto;">Looks like you haven't made any purchases yet. Discover beautiful, authentic Indian handicrafts from our sellers.</p>
+            <a href="{{ url_for('storefront.index') }}" class="btn-solid-primary" style="display: inline-block; padding: 1rem 2rem; text-decoration: none;">Start Shopping</a>
+        </div>
+    {% endif %}
+    
+</div>
+{% endblock %}

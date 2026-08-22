@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="container" style="padding: 5rem 0; max-width: 600px;">
+    <div style="background: white; border: 1px solid var(--border-color); padding: 3rem; text-align: center;">
+        <h2 style="color: var(--color-primary); margin-bottom: 2rem;">Become a Seller</h2>
+        <p style="margin-bottom: 2rem; color: var(--color-text-muted);">Join our community of artisans and start selling your traditional crafts to a global audience.</p>
+        
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <p style="color: var(--color-primary); background: var(--color-cream); padding: 0.5rem; margin-bottom: 1rem;">{{ message }}</p>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('auth.register_seller') }}" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem; text-align: left;">
+            <div>
+                <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">Full Name / Store Name</label>
+                <input type="text" name="name" required style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; font-family: var(--font-body);">
+            </div>
+            <div>
+                <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">Email Address</label>
+                <input type="email" name="email" required style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; font-family: var(--font-body);">
+            </div>
+            <div>
+                <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">Create Password</label>
+                <input type="password" name="password" required style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; font-family: var(--font-body);">
+            </div>
+            <button type="submit" class="btn-solid-primary" style="width: 100%;">Register as Seller</button>
+        </form>
+        
+        <p style="margin-top: 2rem; font-size: 0.9rem;">Already registered? <a href="{{ url_for('auth.login') }}" style="color: var(--color-primary); font-weight: bold; text-decoration: underline;">Sign In</a></p>
+    </div>
+</section>
+{% endblock %}
