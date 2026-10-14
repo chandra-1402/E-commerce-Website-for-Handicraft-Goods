@@ -7,8 +7,12 @@ class Config:
     
     db_dir = os.path.join(BASE_DIR, 'database')
     os.makedirs(db_dir, exist_ok=True)
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(db_dir, 'database.db')
+    db_url = os.environ.get('DATABASE_URL')
+    if db_url and db_url.startswith('postgres://'):
+        db_url = db_url.replace('postgres://', 'postgresql://', 1)
+
+    SQLALCHEMY_DATABASE_URI = db_url or ('sqlite:///' + os.path.join(db_dir, 'database.db'))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'images')
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 MB max upload
