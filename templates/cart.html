@@ -33,7 +33,7 @@
                     <tr style="border-bottom: 1px solid var(--border-color);">
                         <td style="padding: 1.5rem 0; display: flex; align-items: center; gap: 1rem;">
                             {% if item.product.image_1 %}
-                                <img src="{{ url_for('static', filename='images/' + item.product.image_1) }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
+                                <img src="{{ item.product.image_1|image_url }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/logo.jpg') }}';" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
                             {% else %}
                                 <div style="width: 80px; height: 80px; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center;"><i class="ph ph-image"></i></div>
                             {% endif %}

@@ -4,7 +4,7 @@
 <div style="background-color: var(--color-cream); padding: 4rem 0; border-bottom: 1px solid var(--border-color);">
     <div class="container" style="display: flex; align-items: center; gap: 2rem;">
         {% if seller.store_logo %}
-            <img src="{{ url_for('static', filename='images/' + seller.store_logo) }}" alt="Store Logo" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <img src="{{ seller.store_logo|image_url }}" alt="Store Logo" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
         {% else %}
             <div style="width: 120px; height: 120px; border-radius: 50%; background-color: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; border: 4px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                 {{ seller.name[0] | upper }}
@@ -40,7 +40,7 @@
         <div style="background: white; border: 1px solid var(--border-color); padding: 1rem; text-align: center; transition: transform 0.3s;">
             <a href="{{ url_for('storefront.product_detail', product_id=p.id) }}" style="text-decoration: none;">
                 {% if p.image_1 %}
-                    <img src="{{ url_for('static', filename='images/' + p.image_1) }}" style="width: 100%; height: 250px; object-fit: cover; margin-bottom: 1rem;">
+                    <img src="{{ p.image_1|image_url }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/logo.jpg') }}';" style="width: 100%; height: 250px; object-fit: cover; margin-bottom: 1rem;">
                 {% else %}
                     <div style="width: 100%; height: 250px; background: #eee; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; color: #999;"><i class="ph ph-image" style="font-size: 3rem;"></i></div>
                 {% endif %}

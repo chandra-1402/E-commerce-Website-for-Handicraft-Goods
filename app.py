@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, url_for
 from config import Config
 from models import db
 from datetime import datetime
@@ -9,6 +9,18 @@ def create_app(config_class=Config):
 
     # Initialize extensions
     db.init_app(app)
+
+    # Configure Cloudinary if credentials provided
+    import cloudinary
+    if app.config.get('CLOUDINARY_URL'):
+        cloudinary.config(cloudinary_url=app.config.get('CLOUDINARY_URL'))
+    elif app.config.get('CLOUDINARY_CLOUD_NAME'):
+        cloudinary.config(
+            cloud_name=app.config.get('CLOUDINARY_CLOUD_NAME'),
+            api_key=app.config.get('CLOUDINARY_API_KEY'),
+            api_secret=app.config.get('CLOUDINARY_API_SECRET'),
+            secure=True
+        )
 
     # Register blueprints
     from routes import auth, seller, storefront, cart
@@ -38,6 +50,14 @@ def create_app(config_class=Config):
             except:
                 return value
         return value.strftime(format)
+        
+    @app.template_filter('image_url')
+    def image_url_filter(img):
+        if not img:
+            return url_for('static', filename='images/logo.jpg')
+        if img.startswith('http://') or img.startswith('https://'):
+            return img
+        return url_for('static', filename='images/' + img)
 
     @app.errorhandler(500)
     def internal_error(error):

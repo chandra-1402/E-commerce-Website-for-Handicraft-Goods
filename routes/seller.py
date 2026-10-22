@@ -1,10 +1,12 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
 from models import db
 from models.product import Product
 from models.user import User
 import os
+import uuid
 from werkzeug.utils import secure_filename
-from flask import current_app
+import cloudinary
+import cloudinary.uploader
 
 bp = Blueprint('seller', __name__)
 
@@ -13,6 +15,34 @@ def check_seller():
         flash('Please login as a seller to access this page.')
         return False
     return True
+
+def upload_image_file(image_file):
+    if not image_file or not image_file.filename:
+        return None
+        
+    cloudinary_configured = bool(
+        current_app.config.get('CLOUDINARY_URL') or 
+        (current_app.config.get('CLOUDINARY_CLOUD_NAME') and current_app.config.get('CLOUDINARY_API_KEY'))
+    )
+    
+    if cloudinary_configured:
+        try:
+            res = cloudinary.uploader.upload(
+                image_file,
+                folder="idea_tribe_handicrafts"
+            )
+            return res.get('secure_url')
+        except Exception as e:
+            current_app.logger.error(f"Cloudinary upload error: {e}")
+            image_file.seek(0)
+            
+    # Local fallback
+    ext = os.path.splitext(image_file.filename)[1].lower()
+    unique_name = f"{uuid.uuid4().hex[:12]}{ext}"
+    image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_name)
+    image_file.seek(0)
+    image_file.save(image_path)
+    return unique_name
 
 @bp.route('/dashboard')
 def dashboard():
@@ -44,10 +74,9 @@ def add_product():
         for i in range(1, 6):
             image = request.files.get(f'image_{i}')
             if image and image.filename:
-                filename = secure_filename(image.filename)
-                image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-                image.save(image_path)
-                setattr(new_product, f'image_{i}', filename)
+                saved_img = upload_image_file(image)
+                if saved_img:
+                    setattr(new_product, f'image_{i}', saved_img)
                 
         db.session.add(new_product)
         db.session.commit()
@@ -75,10 +104,9 @@ def edit_product(product_id):
         for i in range(1, 6):
             image = request.files.get(f'image_{i}')
             if image and image.filename:
-                filename = secure_filename(image.filename)
-                image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-                image.save(image_path)
-                setattr(product, f'image_{i}', filename)
+                saved_img = upload_image_file(image)
+                if saved_img:
+                    setattr(product, f'image_{i}', saved_img)
                 
         db.session.commit()
         flash('Product updated successfully!')
@@ -165,10 +193,9 @@ def store_settings():
         
         logo = request.files.get('store_logo')
         if logo and logo.filename:
-            filename = secure_filename(logo.filename)
-            logo_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            logo.save(logo_path)
-            seller.store_logo = filename
+            saved_logo = upload_image_file(logo)
+            if saved_logo:
+                seller.store_logo = saved_logo
             
         db.session.commit()
         flash('Store settings updated successfully!')

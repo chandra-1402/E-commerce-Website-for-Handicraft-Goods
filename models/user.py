@@ -28,5 +28,5 @@ class User(db.Model):
     
     # Store specific details for Sellers
     store_description = db.Column(db.Text, nullable=True)
-    store_logo = db.Column(db.String(255), nullable=True)
+    store_logo = db.Column(db.String(1000), nullable=True)
     rating = db.Column(db.Float, default=0.0)
