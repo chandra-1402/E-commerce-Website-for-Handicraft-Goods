@@ -39,6 +39,11 @@ def create_app(config_class=Config):
                 return value
         return value.strftime(format)
 
+    @app.errorhandler(500)
+    def internal_error(error):
+        db.session.rollback()
+        return render_template('base.html'), 500
+
     with app.app_context():
         # Import models so they are registered with SQLAlchemy
         import models.user
@@ -53,4 +58,6 @@ def create_app(config_class=Config):
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    import os
+    port = int(os.environ.get('PORT', 5001))
+    app.run(debug=True, port=port)

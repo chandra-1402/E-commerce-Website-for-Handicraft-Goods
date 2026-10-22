@@ -13,6 +13,10 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = db_url or ('sqlite:///' + os.path.join(db_dir, 'database.db'))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+    }
     UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'images')
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 MB max upload

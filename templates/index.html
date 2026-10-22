@@ -1,50 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section" style="
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ url_for('static', filename='images/Banner 1.jpg') }}');
-    background-size: cover; 
-    background-position: center; 
-    color: white; 
-    padding: 6rem 0; 
-    text-align: center;
-">
-    <div class="container">
-        <h2 style="font-family: var(--font-display); font-size: 3.5rem; margin-bottom: 1rem;">
-            Authentic Tribal Handicrafts
-        </h2>
-        <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem auto; line-height: 1.6;">
-            Discover the rich cultural heritage through our handpicked collection of traditional crafts.
-        </p>
-        <a href="{{ url_for('storefront.all_products') }}" class="btn-solid-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">Explore Collection</a>
-    </div>
+<!-- Hero Banner -->
+<section class="hero-section" style="width: 100%; overflow: hidden; background: #faf6f0; line-height: 0;">
+    <a href="{{ url_for('storefront.all_products') }}" style="display: block; width: 100%; text-decoration: none;">
+        <img src="{{ url_for('static', filename='images/tribal_women_banner.png') }}" 
+             alt="Handmade by Tribal Women - Tradition in Every Piece" 
+             style="width: 100%; height: auto; max-height: 520px; object-fit: cover; object-position: center; display: block;">
+    </a>
 </section>
 
-<!-- Shop by Category -->
-<section class="container" style="padding-top: 2rem;">
-    <div class="section-title">
-        <span>Shop by Category</span>
-    </div>
-    
-    <div class="category-grid">
-        <div class="category-card">
-            <!-- Using product 1 -->
-            <img src="{{ url_for('static', filename='images/product 1.jpg') }}" alt="Sarees">
-            <h3>Sarees</h3>
-        </div>
-        <div class="category-card">
-            <!-- Using product 2 -->
-            <img src="{{ url_for('static', filename='images/product 2.jpg') }}" alt="Men Ethnic Wear">
-            <h3>Men Ethnic Wear</h3>
-        </div>
-        <div class="category-card">
-            <!-- Using product 3 -->
-            <img src="{{ url_for('static', filename='images/product 3.jpg') }}" alt="Women Kurtis">
-            <h3>Women Kurtis</h3>
-        </div>
-    </div>
-</section>
 
 <!-- Latest Arrivals / Products -->
 <section class="container" style="padding: 4rem 0 2rem 0;">

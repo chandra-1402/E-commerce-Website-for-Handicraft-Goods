@@ -19,10 +19,12 @@
 
     <!-- Top Bar -->
     <div class="top-bar">
-        <div class="container" style="display: flex; justify-content: space-between; width: 100%;">
-            <div>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/1200px-Emblem_of_India.svg.png" style="height: 15px; margin-right: 5px; filter: brightness(0) invert(1);" alt="Emblem">
-                Government of India | Ministry of Textiles
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <img src="{{ url_for('static', filename='images/jharkhand_emblem.png') }}" 
+                     alt="Government of Jharkhand Emblem" 
+                     style="height: 22px; width: 22px; object-fit: contain; vertical-align: middle; background: #ffffff; border-radius: 50%; padding: 1px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
+                <span style="font-weight: 500; letter-spacing: 0.3px;">Government of Jharkhand | Tribal Art</span>
             </div>
             <div>
                 English <i class="ph ph-caret-down"></i>
